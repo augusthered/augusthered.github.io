@@ -1,0 +1,3076 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Naive Bayes classifier &#8212; My sample book</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Probabilistic models" href="notebooks2.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="My sample book - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="My sample book - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Welcome to your Jupyter Book
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="notebooks2.html">Probabilistic models</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Naive Bayes classifier</a></li>
+</ul>
+</li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/executablebooks/jupyter-book/issues/new?title=Issue%20on%20page%20%2Fnotebooks.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/notebooks.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Naive Bayes classifier</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assumptions-made-by-naive-bayes">Assumptions Made by Naive Bayes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-bayes-example">Naive Bayes Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-naive-bayes-classifiers">Types of Naive Bayes Classifiers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approaches-to-classification-training-discriminative-vs-generative-models">Approaches to classification training: Discriminative vs generative models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-classifier">Bayesian classifier</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-bayes-estimation">Naive Bayes estimation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-implementations-of-the-models">Python implementations of the models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multinomial-naive-bayes">Multinomial Naive Bayes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-naive-bayes-classifier">Gaussian Naive Bayes classifier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bernoulli-naive-bayes-classifier">Bernoulli Naive Bayes classifier</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-titanic">Example: Titanic</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="naive-bayes-classifier">
+<h1>Naive Bayes classifier<a class="headerlink" href="#naive-bayes-classifier" title="Permalink to this heading">#</a></h1>
+<p>A <strong><a class="reference external" href="https://en.wikipedia.org/wiki/Naive_Bayes_classifier#:~:text=Naive%20Bayes%20is%20a%20simple,drawn%20from%20some%20finite%20set.">Naive Bayes classifier</a></strong> is a type of probabilistic machine learning model commonly used for sorting things into different groups.</p>
+<p>It’s especially popular in tasks involving understanding human language (like in natural language processing or text classification), identifying spam in emails, figuring out the sentiment behind a piece of text, and more.</p>
+<p>The model relies on a statistical concept called Bayes’ theorem and makes a “naive” assumption that the different characteristics we’re looking at are independent of each other. Despite this oversimplification, Naive Bayes often turns out to be surprisingly effective in real-world situations.</p>
+<ol class="arabic simple">
+<li><p><strong>Bayes’ Theorem.</strong></p></li>
+</ol>
+<p>Bayes’ theorem is also known as Bayes’ Rule or Bayes’ law, which is used to determine the probability of a hypothesis with prior knowledge. It depends on the conditional probability.</p>
+<p>Conditional probability is a measure of the probability of an event occurring given that another event has (by assumption, presumption, assertion, or evidence) occurred.</p>
+<p>The formula for Bayes’ theorem is given as:</p>
+<div class="math notranslate nohighlight">
+\[P(y|X) = \frac{P(X)}{P(X|y) \cdot P(y)}\]</div>
+<p>Where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P(y|X)\)</span> is the probability of class y given the features X;</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(X|y)\)</span> is the likelihood, the probability of observing features X given class y;</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(y)\)</span> is the prior probability of class y;</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(X)\)</span> is the evidence, the probability of observing the features X.</p></li>
+</ul>
+<ol class="arabic simple" start="2">
+<li><p><strong>Conditional Independence</strong></p></li>
+</ol>
+<p>The “naive” assumption made by Naive Bayes is that all features are conditionally independent given the class label. In other words, the presence or absence of one feature does not affect the presence or absence of any other feature. This simplifies the calculation of the likelihood, making the model computationally tractable.</p>
+<section id="assumptions-made-by-naive-bayes">
+<h2>Assumptions Made by Naive Bayes<a class="headerlink" href="#assumptions-made-by-naive-bayes" title="Permalink to this heading">#</a></h2>
+<p>The fundamental Naïve Bayes assumption is that each feature makes an:</p>
+<ul class="simple">
+<li><p>independent</p></li>
+<li><p>equal
+contribution to the outcome.</p></li>
+</ul>
+<p>Let us take an example to get some better intuition. Consider the car theft problem with attributes Color, Type, Origin, and the target, Stolen can be either Yes or No.</p>
+</section>
+<section id="naive-bayes-example">
+<h2>Naive Bayes Example<a class="headerlink" href="#naive-bayes-example" title="Permalink to this heading">#</a></h2>
+<p>The dataset is represented as below:</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/Yqy1yYrP/nb7.png" alt="nb7"/></a><br/><br/></p>
+<p>The concept of assumptions made by the algorithm can be understood as:</p>
+<ul class="simple">
+<li><p>We assume that no pair of features are dependent. For example, the color being ‘Red’ has nothing to do with the Type or the Origin of the car. Hence, the features are assumed to be Independent.</p></li>
+<li><p>Secondly, each feature is given the same influence(or importance). For example, knowing the only Color and Type alone can’t predict the outcome perfectly. So none of the attributes are irrelevant and assumed to be contributing Equally to the outcome.</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Note: The assumptions made by Naïve Bayes are generally not correct in real-world situations. The independence assumption is never correct but often works well in practice. Hence the name ‘Naï&gt;ve’.
+</pre></div>
+</div>
+<p>Here in our dataset, we need to classify whether the car is stolen, given the features of the car.</p>
+<p>The columns represent these features and the rows represent individual entries. If we take the first row of the dataset, we can observe that the car is stolen if the Color is Red, the Type is Sports and Origin is Domestic. So we want to classify a Red Domestic SUV is getting stolen or not.</p>
+<p>Let’s create tables of relative frequencies for each parameter relative to the desired result:</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/Vsg9n23m/nb1.png" alt="nb1"/></a><br/><br/></p>
+<p>Frequency and Likelihood tables of ‘Color’</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/gjzv1KLC/nb2.png" alt="nb2"/></a><br/><br/></p>
+<p>Frequency and Likelihood tables of ‘Type’</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/j2MzTJzL/nb3.png" alt="nb3"/></a><br/><br/></p>
+<p>Frequency and Likelihood tables of ‘Origin’</p>
+<p>So in our example, we have 3 predictors X.</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/6QZLZqNm/nb4.png" alt="nb4"/></a><br/><br/></p>
+<p>As per the equations discussed above, we can calculate the posterior probability P(Yes | X) as :</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/zB1wFNzX/nb5.png" alt="nb5"/></a><br/><br/></p>
+<p>and, P( No | X ):</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/NM76NnF8/nb6.png" alt="nb6"/></a><br/><br/></p>
+<p>Since 0.144 &gt; 0.048, Which means given the features RED SUV and Domestic, our example gets classified as ’NO’ the car is not stolen.</p>
+</section>
+<section id="types-of-naive-bayes-classifiers">
+<h2>Types of Naive Bayes Classifiers<a class="headerlink" href="#types-of-naive-bayes-classifiers" title="Permalink to this heading">#</a></h2>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/dVpjDdgC/bayesgraphinfo.png" alt="bayesgraphinfo"/></a><br/><br/></p>
+<ol class="arabic">
+<li><h4>Multinomial Naive Bayes. </h4>
+</li>
+</ol>
+<p>Multinomial naive Bayes Feature vectors represent the frequencies with which certain events have been generated by a. This is the event model typically used for document
+classification.</p>
+<ol class="arabic" start="2">
+<li><h4>Gaussian Naive Bayes. </h4>
+</li>
+</ol>
+<p>In the context of Gaussian Naive Bayes, it is assumed that the continuous values linked to each feature follow a Gaussian distribution, which is commonly referred to as a Normal distribution.</p>
+<ol class="arabic" start="3">
+<li><h4>Bernoulli Naive Bayes. </h4>
+</li>
+</ol>
+<p>In the multivariate Bernoulli event model, characteristics consist of independent boolean values (binary variables) that describe inputs. Similar to the multinomial model, this approach is well-known for tasks such as document classification, specifically focusing on the occurrence of binary terms.</p>
+<h4>Advantages</h4>
+<ul class="simple">
+<li><p>Simplicity and speed: Naive Bayes is computationally efficient and can handle high-dimensional data;</p></li>
+<li><p>Works well with small datasets;</p></li>
+<li><p>Often performs surprisingly well, especially in text classification tasks;</p></li>
+<li><p>Provides probabilities, allowing for probabilistic predictions.</p></li>
+</ul>
+<h4>Limitations</h4>
+<ul class="simple">
+<li><p>The “naive” assumption of feature independence may not hold in many real-world scenarios;</p></li>
+<li><p>If the features are highly correlated, Naive Bayes may produce suboptimal results.</p></li>
+<li><p>It doesn’t handle missing data well.</p></li>
+</ul>
+<p>Naive Bayes classifiers are widely used as a baseline model in many classification problems due to their simplicity and effectiveness, especially when working with text data. However, they may not be the best choice for every problem, and more complex models like decision trees, random forests, or neural networks may provide better accuracy in some cases.</p>
+</section>
+<section id="approaches-to-classification-training-discriminative-vs-generative-models">
+<h2>Approaches to classification training: Discriminative vs generative models<a class="headerlink" href="#approaches-to-classification-training-discriminative-vs-generative-models" title="Permalink to this heading">#</a></h2>
+<p><strong>Generative Approach</strong>: Models how data can be generated for each class. For example, it estimates the probabilities of the occurrence of each word in a document for spam and non-spam classes.</p>
+<p><strong>Discriminative Approach</strong>: Focuses on directly discerning between classes. For instance, it estimates the probability that an email is spam based on a set of features.</p>
+<p>Discriminative models are often preferred when the emphasis is on classification accuracy, and there’s less concern about generating new samples</p>
+<p>A <strong>discriminative model</strong> learns posterior distribution <span class="math notranslate nohighlight">\(p(y \vert \boldsymbol x, \boldsymbol w)\)</span>. Example: logistic regression model</p>
+<div class="math notranslate nohighlight">
+\[
+\mathbb P(y=1  \vert \boldsymbol x, \boldsymbol w) = \sigma(\boldsymbol x^\intercal \boldsymbol w), \quad 
+\mathbb P(y=0  \vert \boldsymbol x, \boldsymbol w) =  1 - \sigma(\boldsymbol x^\intercal \boldsymbol w)
+\]</div>
+<p>Generative models are useful when the goal is to generate new samples or when dealing with missing data. They also have applications in unsupervised learning.</p>
+<p>A <strong>generative model</strong> estimates joint distribution</p>
+<div class="math notranslate nohighlight">
+\[
+p(\boldsymbol x, y) = p(\boldsymbol x \vert y) p(y).
+\]</div>
+</section>
+<section id="bayesian-classifier">
+<h2>Bayesian classifier<a class="headerlink" href="#bayesian-classifier" title="Permalink to this heading">#</a></h2>
+<p>For classification use Bayes theorem:</p>
+<div class="math notranslate nohighlight">
+\[
+    \mathbb P(y = k \vert \boldsymbol x) = \frac{p(\boldsymbol x \vert y = k) \mathbb P(y = k)}{\sum\limits_{j=1}^K p(\boldsymbol x \vert y = j) \mathbb P(y = j)}
+\]</div>
+<p><strong>Bayesian classifier</strong> maximizes this expression:</p>
+<div class="math notranslate nohighlight">
+\[
+    \widehat y = \arg\max\limits_{1\leqslant j \leqslant K} p(\boldsymbol x \vert y = j) \mathbb P(y = j)
+\]</div>
+<p>How to estimate <span class="math notranslate nohighlight">\(\mathbb P(y = k)\)</span> and <span class="math notranslate nohighlight">\(p(\boldsymbol x \vert y = k)\)</span> given a training dataset <span class="math notranslate nohighlight">\((\boldsymbol X, \boldsymbol y)\)</span>?</p>
+<p>In Gaussian Naïve Bayes, continuous values associated with each feature are assumed to be distributed according to a Gaussian distribution (Normal distribution). When plotted, it gives a bell-shaped curve which is symmetric about the mean of the feature values as shown below:</p>
+<p><a href="https://postimages.org/" target="_blank"><img src="https://i.postimg.cc/yYNmPvH9/img.png" alt="img"/></a><br/><br/></p>
+<p>Special cases of parametric density estimation:</p>
+<ul class="simple">
+<li><p><strong>Quadratic discriminant analysis</strong> (QDA): allows for different covariance matrices for each class, making it more flexible in capturing the underlying structure of the data.</p></li>
+<li><p><strong>Linear discriminant analysis</strong> (LDA): the covariance matrix <span class="math notranslate nohighlight">\(\boldsymbol \Sigma\)</span> is the same for all classes, and it’s MLE estimation is</p></li>
+</ul>
+<section id="naive-bayes-estimation">
+<h3>Naive Bayes estimation<a class="headerlink" href="#naive-bayes-estimation" title="Permalink to this heading">#</a></h3>
+<p><strong>Naive assumption</strong>: refers to treating features as if they are independent given the class label, simplifying the modeling process. All feature, conditioned on target, are independent:</p>
+<div class="math notranslate nohighlight">
+\[
+    p(\boldsymbol x \vert y) = p(x_1, \ldots, x_d \vert y) = \prod\limits_{j=1}^d p(x_j \vert y)
+\]</div>
+<p>To estimate 1-d densities <span class="math notranslate nohighlight">\(p(x_j \vert y)\)</span> is much easier than multivariate ones. The output of the Bayesian classifier is given by</p>
+<div class="math notranslate nohighlight">
+\[
+    \arg\max\limits_{1\leqslant k \leqslant K}\big(\log \widehat y_k + \sum\limits_{j=1}^d \log \widehat p_j(x_j \vert y = k)\big)
+\]</div>
+</section>
+</section>
+<section id="python-implementations-of-the-models">
+<h2>Python implementations of the models<a class="headerlink" href="#python-implementations-of-the-models" title="Permalink to this heading">#</a></h2>
+<section id="multinomial-naive-bayes">
+<h3>Multinomial Naive Bayes<a class="headerlink" href="#multinomial-naive-bayes" title="Permalink to this heading">#</a></h3>
+<p>Here’s an example of how to implement a Multinomial Naive Bayes classifier in Python using scikit-learn. In this example, we’ll use the famous “20 Newsgroups” dataset for text classification, where the task is to classify news articles into one of 20 different categories.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">fetch_20newsgroups</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+
+<span class="c1"># Load the 20 Newsgroups dataset</span>
+<span class="n">newsgroups</span> <span class="o">=</span> <span class="n">fetch_20newsgroups</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">remove</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;headers&#39;</span><span class="p">,</span> <span class="s1">&#39;footers&#39;</span><span class="p">,</span> <span class="s1">&#39;quotes&#39;</span><span class="p">))</span>
+
+<span class="c1"># Split the dataset into training and testing sets</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">newsgroups</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">newsgroups</span><span class="o">.</span><span class="n">target</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Create a pipeline for text classification with Multinomial Naive Bayes</span>
+<span class="n">text_clf</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;vect&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">()),</span>  <span class="c1"># Convert text to a bag-of-words representation</span>
+    <span class="p">(</span><span class="s1">&#39;tfidf&#39;</span><span class="p">,</span> <span class="n">TfidfTransformer</span><span class="p">()),</span>  <span class="c1"># Convert raw frequency counts to TF-IDF values</span>
+    <span class="p">(</span><span class="s1">&#39;clf&#39;</span><span class="p">,</span> <span class="n">MultinomialNB</span><span class="p">())</span>  <span class="c1"># Multinomial Naive Bayes classifier</span>
+<span class="p">])</span>
+
+<span class="c1"># Fit the model on the training data</span>
+<span class="n">text_clf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="c1"># Make predictions on the test data</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">text_clf</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Evaluate the model</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.65
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this code:</p>
+<ol class="arabic simple">
+<li><p>We load the 20 Newsgroups dataset and split it into training and testing sets.</p></li>
+<li><p>We create a pipeline for text classification, which includes text preprocessing steps like converting text to a bag-of-words representation and then to TF-IDF (Term Frequency-Inverse Document Frequency) values.</p></li>
+<li><p>We use the Multinomial Naive Bayes classifier from scikit-learn (MultinomialNB) as the final step in the pipeline.</p></li>
+<li><p>We fit the model on the training data and make predictions on the test data.</p></li>
+<li><p>Finally, the accuracy of the model is evaluated using scikit-learn’s accuracy_score function.</p></li>
+</ol>
+</section>
+<section id="gaussian-naive-bayes-classifier">
+<h3>Gaussian Naive Bayes classifier<a class="headerlink" href="#gaussian-naive-bayes-classifier" title="Permalink to this heading">#</a></h3>
+<p>Here’s an example of how to implement a Gaussian Naive Bayes classifier in Python using scikit-learn. Gaussian Naive Bayes is typically used for classification problems where the features are continuous and assumed to follow a Gaussian (normal) distribution.</p>
+<p>In this example, we’ll use a commonly used dataset for classification tasks:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">load_breast_cancer</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+
+<span class="c1"># Load the Breast Cancer dataset</span>
+<span class="n">cancer</span> <span class="o">=</span> <span class="n">load_breast_cancer</span><span class="p">()</span>
+<span class="n">X</span> <span class="o">=</span> <span class="n">cancer</span><span class="o">.</span><span class="n">data</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">cancer</span><span class="o">.</span><span class="n">target</span>
+
+<span class="c1"># Split the dataset into training and testing sets</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">gnb</span> <span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+
+<span class="n">gnb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">gnb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.96
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this code:</p>
+<ol class="arabic simple">
+<li><p>The Breast Cancer dataset is loaded using load_breast_cancer from scikit-learn’s datasets.</p></li>
+<li><p>The dataset is split into training and testing sets using train_test_split.</p></li>
+<li><p>A Gaussian Naive Bayes classifier (GaussianNB) is instantiated.</p></li>
+<li><p>The classifier is trained on the training data using the fit method.</p></li>
+<li><p>Predictions are made on the test data using the predict method.</p></li>
+</ol>
+<p>This example uses the Gaussian Naive Bayes classifier to predict whether a tumor is malignant or benign based on features such as mean radius, mean texture, mean smoothness, etc.</p>
+</section>
+<section id="bernoulli-naive-bayes-classifier">
+<h3>Bernoulli Naive Bayes classifier<a class="headerlink" href="#bernoulli-naive-bayes-classifier" title="Permalink to this heading">#</a></h3>
+<p>Here’s an example of how to implement a Bernoulli Naive Bayes classifier in Python using scikit-learn. Bernoulli Naive Bayes is typically used for binary classification tasks where features are binary, representing the presence or absence of certain attributes.</p>
+<p>In this example, we’ll use a synthetic dataset for binary classification:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_classification</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">BernoulliNB</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">metrics</span>
+
+<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">make_classification</span><span class="p">(</span><span class="n">n_samples</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_features</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="c1"># Split the dataset into training and testing sets</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+
+<span class="n">bnb</span> <span class="o">=</span> <span class="n">BernoulliNB</span><span class="p">()</span>
+
+<span class="n">bnb</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">bnb</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">metrics</span><span class="o">.</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Accuracy: </span><span class="si">{</span><span class="n">accuracy</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Accuracy: 0.80
+</pre></div>
+</div>
+</div>
+</div>
+<p>In this code:</p>
+<ol class="arabic simple">
+<li><p>A synthetic binary classification dataset is generated using the make_classification function from scikit-learn.</p></li>
+<li><p>The dataset is divided into training and testing sets.</p></li>
+<li><p>A Bernoulli Naive Bayes classifier is instantiated using the BernoulliNB class.</p></li>
+<li><p>The model is trained on the provided training data.</p></li>
+<li><p>Predictions are made on the test data, and the accuracy of the model is assessed.</p></li>
+</ol>
+<p>This illustration showcases the application of Bernoulli Naive Bayes for solving a binary classification problem with binary features.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Bernoulli Naive Bayes&#39;</span><span class="p">,</span> <span class="s1">&#39;Multinomial Naive Bayes&#39;</span><span class="p">,</span> <span class="s1">&#39;Gaussian Naive Bayes&#39;</span><span class="p">]</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.80</span><span class="p">,</span> <span class="mf">0.65</span><span class="p">,</span> <span class="mf">0.96</span><span class="p">]</span>
+
+<span class="c1"># Строим столбчатую диаграмму для сравнения точности классификаторов.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">classifiers</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Comparison of Naive Bayes Classifiers&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Naive Bayes Classifiers&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/13c2ff559c224105f6beebf3d1c3f77dc2d756da79ba5745dbd85b2b373ef7d1.png" src="_images/13c2ff559c224105f6beebf3d1c3f77dc2d756da79ba5745dbd85b2b373ef7d1.png" />
+</div>
+</div>
+<div class="cell tag_hide_code docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">jupyterquiz</span> <span class="kn">import</span> <span class="n">display_quiz</span>
+<span class="k">def</span> <span class="nf">get_spanned_encoded_q</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">q_name</span><span class="p">):</span>
+    <span class="n">byte_code</span> <span class="o">=</span> <span class="n">b64encode</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">q</span><span class="p">),</span> <span class="s1">&#39;utf8&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;&lt;span style=&quot;display:none&quot; id=&quot;</span><span class="si">{</span><span class="n">q_name</span><span class="si">}</span><span class="s1">&quot;&gt;</span><span class="si">{</span><span class="n">byte_code</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="si">}</span><span class="s1">&lt;/span&gt;&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide_code docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;</span>
+<span class="s1">code_show=true; </span>
+<span class="s1">function code_toggle() {</span>
+<span class="s1"> if (code_show){</span>
+<span class="s1"> $(&#39;div.input&#39;).hide();</span>
+<span class="s1"> } else {</span>
+<span class="s1"> $(&#39;div.input&#39;).show();</span>
+<span class="s1"> }</span>
+<span class="s1"> code_show = !code_show</span>
+<span class="s1">} </span>
+<span class="s1">$( document ).ready(code_toggle);</span>
+<span class="s1">&lt;/script&gt;</span>
+<span class="s1">&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="n">q_b_a</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;In what scenarios might it be most appropriate to use the Naive Bayes classifier considering its principles and assumptions?&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;many_choice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;answers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;When features are strongly correlated and dependent on each other&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;In tasks where the data contains a large number of numerical features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;When the assumption of independence among features is more critical to the end result&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;In tasks involving the classification of textual data, such as sentiment analysis of reviews&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Correct&quot;</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide_code docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_quiz</span><span class="p">(</span><span class="n">q_b_a</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_html"><div id="SSgUJgOKrUwJ" data-shufflequestions="False" data-shuffleanswers="True" data-numquestions="1000000"><style>
+:root {
+    --medium-slate-blue: #6f78ffff;
+    --orange-pantone: #f75c03ff;
+    --russian-violet: #392061ff;
+    --maximum-yellow-red: #ffc857ff;
+    --viridian-green: #119da4ff;
+    --incorrect-red: #c80202;
+    --correct-green: #009113;
+}
+
+
+.Quiz {
+     max-width: 600px;
+     margin-top: 15px;
+     margin-left: auto;
+     margin-right: auto;
+     margin-bottom: 15px;
+     padding-bottom: 4px;
+     padding-top: 4px;
+     line-height: 1.1;
+     font-size: 16pt;
+}
+
+.QuizCode {
+    font-size: 14pt;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.QuizCode > pre {
+    padding: 4px;
+}
+.Answer{
+     margin: 10px 0;
+     display: grid;
+     grid-template-columns: auto auto;
+     grid-gap: 10px;
+}
+.Feedback{
+     font-size: 16pt;
+     text-align:center;
+ }
+
+.Input {
+    align:left;
+    font-size: 20pt;
+}
+.Input-text {
+    display: block;
+    margin: 10px;
+    color: inherit;
+    width: 140px;
+    background-color: #c0c0c0;
+    color: #fff;
+    padding: 5px;
+    padding-left: 10px;
+
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: inherit;
+    line-height: 20pt;
+    border: none;
+    border-radius: 0.2rem;
+    transition: box-shadow 0.1s);
+}
+
+ .Input-text:focus {
+     outline: none;
+     background-color: #c0c0c0;
+     box-shadow: 0.6rem 0.8rem 1.4rem -0.5rem #999999;
+ }
+
+ .MCButton{
+     background: #fafafa;
+     border: 1px solid #eee;
+     border-radius: 10px;
+     padding: 10px;
+     font-size: 16px;
+     cursor: pointer;
+     text-align: center;
+ }
+ .MultipleChoiceQn {
+     padding: 10px;
+     background: var(--medium-slate-blue);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .ManyChoiceQn {
+     padding: 10px;
+     background: var(--orange-pantone);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .NumericQn {
+     padding: 10px;
+     background: var(--russian-violet);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+.InpLabel {
+     line-height: 34px;
+     float:left;
+     margin-right: 10px;
+     color: #101010;
+     font-size: 15pt;
+}
+.incorrect {
+    color: var(--incorrect-red);
+}
+.correct {
+    color: var(--correct-green);
+}
+.correctButton {
+    background: var(--correct-green);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+.incorrectButton {
+    background: var(--incorrect-red);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+
+
+</style><script type="text/Javascript">questionsSSgUJgOKrUwJ=[{"question": "In what scenarios might it be most appropriate to use the Naive Bayes classifier considering its principles and assumptions?", "type": "many_choice", "answers": [{"answer": "When features are strongly correlated and dependent on each other", "correct": false, "feedback": "Incorrect"}, {"answer": "In tasks where the data contains a large number of numerical features", "correct": false, "feedback": "Incorrect"}, {"answer": "When the assumption of independence among features is more critical to the end result", "correct": false, "feedback": "Incorrect"}, {"answer": "In tasks involving the classification of textual data, such as sentiment analysis of reviews", "correct": true, "feedback": "Correct"}]}];
+    //var mydiv=document.getElementById("testDIV");//console.log(mydiv);// Make a random ID
+function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result.push(characters.charAt(Math.floor(Math.random() *  charactersLength)));
+    }
+    return result.join('');
+}
+
+// Choose a random subset of an array. Can also be used to shuffle the array
+function getRandomSubarray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, temp, index;
+    while (i--) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size);
+}
+function check_mc() {
+    var id=this.id.split('-')[0];
+
+    //console.log("In check_mc(), id="+id);
+    //console.log(event.srcElement.id)           
+    //console.log(event.srcElement.dataset.correct)   
+    //console.log(event.srcElement.dataset.feedback)
+
+    var answers= event.srcElement.parentElement.children;
+    //console.log(answers);
+    
+    // Split behavior based on multiple choice vs many choice:
+    var fb = document.getElementById("fb"+id);
+    if (fb.dataset.numcorrect==1) {
+        for (var i = 0; i < answers.length; i++) {
+            var child=answers[i];
+            child.className="MCButton";
+        }
+
+
+
+        fb.textContent=event.srcElement.dataset.feedback;
+        if (event.srcElement.dataset.correct=="true")   {
+            // console.log("Correct action");
+            this.classList.add("correctButton");
+
+            fb.className="Feedback";
+            fb.classList.add("correct");
+
+        } else {
+            //console.log("Error action");
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+    }
+    else {
+        //console.log("Many choice not implemented yet");
+        var reset = false;
+        if (event.srcElement.dataset.correct=="true" )   {
+            if (event.srcElement.dataset.answered<=0) {
+                if (fb.dataset.answeredcorrect<0) {
+                    fb.dataset.answeredcorrect=1;
+                    reset=true;
+                } else {
+                    fb.dataset.answeredcorrect++;
+                }
+                if (reset) {
+                    for (var i = 0; i < answers.length; i++) {
+                        var child=answers[i];
+                        child.className="MCButton";
+                        child.dataset.answered=0;
+                    }
+                }
+                this.classList.add("correctButton");
+                this.dataset.answered=1;
+                fb.className="Feedback";
+                fb.classList.add("correct");
+
+            }
+        } else {
+            if (fb.dataset.answeredcorrect>0) {
+                fb.dataset.answeredcorrect=-1;
+                reset=true;
+            } else {
+                fb.dataset.answeredcorrect--;
+            }
+
+            if (reset) {
+                for (var i = 0; i < answers.length; i++) {
+                    var child=answers[i];
+                    child.className="MCButton";
+                    child.dataset.answered=0;
+                }
+            }
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+
+        var numcorrect=fb.dataset.numcorrect;
+        var answeredcorrect=fb.dataset.answeredcorrect;
+        if (answeredcorrect>=0) {
+            fb.textContent=event.srcElement.dataset.feedback + " ["  + answeredcorrect + "/" + numcorrect + "]";
+        } else {
+            fb.textContent=event.srcElement.dataset.feedback + "["  + 0 + "/" + numcorrect + "]";
+        }
+
+
+    }
+
+    
+
+}
+
+function make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id) {
+    var shuffled;
+    if (shuffle_answers=="True") {
+        //console.log(shuffle_answers+" read as true");
+        shuffled=getRandomSubarray(qa.answers, qa.answers.length);
+    } else {
+        //console.log(shuffle_answers+" read as false");
+        shuffled=qa.answers;
+    }
+    
+
+    var num_correct=0;
+
+
+    
+    shuffled.forEach((item, index, ans_array) => {
+        //console.log(answer);
+        
+        // Make input element
+        var inp = document.createElement("input");
+        inp.type="radio";
+        inp.id="quizo"+id+index;
+        inp.style="display:none;";
+        aDiv.append(inp);
+        
+        //Make label for input element
+        var lab = document.createElement("label");
+        lab.className="MCButton";
+        lab.id=id+ '-' +index;
+        lab.onclick=check_mc;
+        lab.textContent=item.answer;
+        
+        // Set the data attributes for the answer
+        lab.setAttribute('data-correct', item.correct);
+        if (item.correct) {
+            num_correct++;
+        }
+        lab.setAttribute('data-feedback', item.feedback);
+        lab.setAttribute('data-answered', 0);
+
+        aDiv.append(lab);
+
+    });
+
+    if (num_correct>1) {
+        outerqDiv.className="ManyChoiceQn";
+    } else {
+        outerqDiv.className="MultipleChoiceQn";
+    }
+
+    return num_correct;
+
+}
+function check_numeric(ths, event) {
+
+    if (event.keyCode === 13) {
+        ths.blur();
+
+        var id=ths.id.split('-')[0];
+
+        var submission=ths.value;
+				if (submission.indexOf('/') != -1) {
+            sub_parts=submission.split('/');
+            //console.log(sub_parts);
+            submission=sub_parts[0]/sub_parts[1];
+        }
+        console.log("Reader entered", submission);
+
+        if ("precision" in ths.dataset) {
+            precision=ths.dataset.precision;
+            // console.log("1:", submission)
+            submission=Math.round((1*submission + Number.EPSILON)*10**precision)/ 10**precision; 
+            // console.log("Rounded to ", submission, " precision=", precision  );
+        }
+
+
+        //console.log("In check_numeric(), id="+id);
+        //console.log(event.srcElement.id)           
+        //console.log(event.srcElement.dataset.feedback)
+
+        var fb = document.getElementById("fb"+id);
+        fb.style.display="none";
+        fb.textContent="Incorrect -- try again.";
+
+        answers=JSON.parse(ths.dataset.answers);
+        console.log(answers);
+
+        var defaultFB="";
+        var correct;
+        var done=false;
+        answers.every(answer => {
+            console.log(answer.type);
+
+            correct=false;
+            if (answer.type=="value"){
+                if (submission == answer.value) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="range") {
+                console.log(answer.range);
+                if ((submission >= answer.range[0]) && (submission < answer.range[1])) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="default") {
+                defaultFB=answer.feedback;
+            }
+            if (done) {
+                return false; // Break out of loop if this has been marked correct
+            } else {
+                return true; // Keep looking for case that includes this as a correct answer
+            }
+        });
+
+        if ((!done) && (defaultFB != "")) {
+            fb.textContent=defaultFB;
+            console.log("Default feedback", defaultFB);
+        }
+
+        fb.style.display="block";
+        if (correct) {
+            ths.className="Input-text";
+            ths.classList.add("correctButton");
+            fb.className="Feedback";
+            fb.classList.add("correct");
+        } else {
+            ths.className="Input-text";
+            ths.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+        return false;
+    }
+
+}
+
+function isValid(el,  charC) {
+		if (charC == 46) {
+				if (el.value.indexOf('.') === -1) {
+					  return true;
+				} else if (el.value.indexOf('/') != -1) {
+            parts=el.value.split('/');
+				    if (parts[1].indexOf('.') === -1) {
+					      return true;
+            }
+        }
+        else{
+					  return false;
+				}
+		} else if (charC == 47) {
+				if (el.value.indexOf('/') === -1) {
+            if ((el.value != "") && (el.value != ".")) {
+					      return true;
+            } else {
+					  return false;
+				    }
+        } else {
+            return false;
+        }
+		} else if (charC == 45) {
+        if (el.value == "" ) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+				if (charC > 31 && (charC < 48 || charC > 57))
+					  return false;
+		}
+		return true;
+}
+
+function numeric_keypress( evnt) {
+		var charC = (evnt.which) ? evnt.which : evnt.keyCode;
+
+    if (charC==13) {
+        check_numeric(this, evnt);
+    } else{
+		    return isValid(this, charC);
+    }
+}
+
+
+
+
+
+function make_numeric(qa, outerqDiv, qDiv, aDiv, id) {
+
+
+
+        //console.log(answer);
+
+    
+    outerqDiv.className="NumericQn";
+    aDiv.style.display='block';
+
+    var lab = document.createElement("label");
+    lab.className="InpLabel";
+    lab.textContent="Type numeric answer here:";
+    aDiv.append(lab);
+
+    var inp = document.createElement("input");
+    inp.type="text";
+    //inp.id="input-"+id;
+    inp.id=id+"-0";
+    inp.className="Input-text";
+    inp.setAttribute('data-answers', JSON.stringify(qa.answers) );
+    if ("precision" in qa) {
+        inp.setAttribute('data-precision', qa.precision);
+    }
+    aDiv.append(inp);
+    console.log(inp);
+
+    //inp.addEventListener("keypress", check_numeric);
+    //inp.addEventListener("keypress", numeric_keypress);
+    /*
+    inp.addEventListener("keypress", function(event) {
+        return numeric_keypress(this, event);
+    }
+                        );
+                        */
+    //inp.onkeypress="return numeric_keypress(this, event)";
+    inp.onkeypress=numeric_keypress;
+    inp.onpaste= event => false;
+
+    inp.addEventListener("focus", function(event) {
+        this.value="";
+        return false;
+    }
+                        );
+
+
+}
+function show_questions (json, mydiv) {
+    //var mydiv=document.getElementById(myid);
+    var shuffle_questions=mydiv.dataset.shufflequestions;
+    var num_questions=mydiv.dataset.numquestions;
+    var shuffle_answers=mydiv.dataset.shuffleanswers;
+    
+    if (num_questions>json.length) {
+        num_questions=json.length;
+    }
+    
+    var questions;
+    if ( (num_questions<json.length) || (shuffle_questions=="True") ) {
+        //console.log(num_questions+","+json.length);
+        questions=getRandomSubarray(json, num_questions);
+    } else {
+        questions=json;
+    }
+    
+    //console.log("SQ: "+shuffle_questions+", NQ: " + num_questions + ", SA: ", shuffle_answers);
+    
+    // Iterate over questions
+    questions.forEach((qa, index, array) => {
+        //console.log(qa.question); 
+
+        var id = makeid(8);
+        //console.log(id);
+
+
+        // Create Div to contain question and answers
+        var iDiv = document.createElement('div');
+        iDiv.id = 'quizWrap'+id+index;
+        iDiv.className='Quiz';
+        mydiv.appendChild(iDiv);
+        // iDiv.innerHTML=qa.question;
+
+        var outerqDiv = document.createElement('div');
+        outerqDiv.id="OuterquizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        iDiv.append(outerqDiv);
+
+        // Create div to contain question part
+        var qDiv = document.createElement('div');
+        qDiv.id="quizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        qDiv.innerHTML=qa.question;
+        outerqDiv.append(qDiv);
+
+        // Create div for code inside question
+        var codeDiv;
+        if ("code" in qa){
+            codeDiv = document.createElement('div');
+            codeDiv.id="code"+id+index;
+            codeDiv.className="QuizCode";
+            var codePre = document.createElement('pre');
+            codeDiv.append(codePre);
+            var codeCode = document.createElement('code');
+            codePre.append(codeCode);
+            codeCode.innerHTML=qa.code;
+            outerqDiv.append(codeDiv);
+            console.log(codeDiv);
+        }
+
+
+        // Create div to contain answer part
+        var aDiv = document.createElement('div');
+        aDiv.id="quizAns"+id+index;
+        aDiv.className='Answer';
+        iDiv.append(aDiv);
+
+        console.log(qa.type);
+
+        var num_correct;
+        if (qa.type=="multiple_choice")  {
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if   (qa.type=="many_choice"){
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if  (qa.type=="numeric") {
+            console.log("numeric");
+            make_numeric(qa, outerqDiv, qDiv, aDiv, id);
+        }
+
+
+        //Make div for feedback
+        var fb = document.createElement("div");
+        fb.id="fb"+id;
+        //fb.style="font-size: 20px;text-align:center;";
+        fb.className="Feedback";
+        fb.setAttribute("data-answeredcorrect", 0);
+        fb.setAttribute("data-numcorrect", num_correct);
+        iDiv.append(fb);
+
+
+    });
+}
+
+        {
+        show_questions(questionsSSgUJgOKrUwJ, SSgUJgOKrUwJ);
+        }
+        </script>
+        </div></div>
+</div>
+<div class="cell tag_hide_code tag_hide_cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;</span>
+<span class="s1">code_show=true; </span>
+<span class="s1">function code_toggle() {</span>
+<span class="s1"> if (code_show){</span>
+<span class="s1"> $(&#39;div.input&#39;).hide();</span>
+<span class="s1"> } else {</span>
+<span class="s1"> $(&#39;div.input&#39;).show();</span>
+<span class="s1"> }</span>
+<span class="s1"> code_show = !code_show</span>
+<span class="s1">} </span>
+<span class="s1">$( document ).ready(code_toggle);</span>
+<span class="s1">&lt;/script&gt;</span>
+<span class="s1">&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="n">q_b_b</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;How does a Naive Bayes classifier calculate the probability of an event, and what are the key steps involved in this process?&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;many_choice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;answers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It relies on deep learning techniques exclusively&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It estimates probabilities for informed classification&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Correct&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It uses unsupervised learning for probability estimation&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It ignores probability calculations and relies solely on feature independence&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide_code tag_hide_cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_quiz</span><span class="p">(</span><span class="n">q_b_b</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_html"><div id="kLCXNbGAFzkj" data-shufflequestions="False" data-shuffleanswers="True" data-numquestions="1000000"><style>
+:root {
+    --medium-slate-blue: #6f78ffff;
+    --orange-pantone: #f75c03ff;
+    --russian-violet: #392061ff;
+    --maximum-yellow-red: #ffc857ff;
+    --viridian-green: #119da4ff;
+    --incorrect-red: #c80202;
+    --correct-green: #009113;
+}
+
+
+.Quiz {
+     max-width: 600px;
+     margin-top: 15px;
+     margin-left: auto;
+     margin-right: auto;
+     margin-bottom: 15px;
+     padding-bottom: 4px;
+     padding-top: 4px;
+     line-height: 1.1;
+     font-size: 16pt;
+}
+
+.QuizCode {
+    font-size: 14pt;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.QuizCode > pre {
+    padding: 4px;
+}
+.Answer{
+     margin: 10px 0;
+     display: grid;
+     grid-template-columns: auto auto;
+     grid-gap: 10px;
+}
+.Feedback{
+     font-size: 16pt;
+     text-align:center;
+ }
+
+.Input {
+    align:left;
+    font-size: 20pt;
+}
+.Input-text {
+    display: block;
+    margin: 10px;
+    color: inherit;
+    width: 140px;
+    background-color: #c0c0c0;
+    color: #fff;
+    padding: 5px;
+    padding-left: 10px;
+
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: inherit;
+    line-height: 20pt;
+    border: none;
+    border-radius: 0.2rem;
+    transition: box-shadow 0.1s);
+}
+
+ .Input-text:focus {
+     outline: none;
+     background-color: #c0c0c0;
+     box-shadow: 0.6rem 0.8rem 1.4rem -0.5rem #999999;
+ }
+
+ .MCButton{
+     background: #fafafa;
+     border: 1px solid #eee;
+     border-radius: 10px;
+     padding: 10px;
+     font-size: 16px;
+     cursor: pointer;
+     text-align: center;
+ }
+ .MultipleChoiceQn {
+     padding: 10px;
+     background: var(--medium-slate-blue);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .ManyChoiceQn {
+     padding: 10px;
+     background: var(--orange-pantone);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .NumericQn {
+     padding: 10px;
+     background: var(--russian-violet);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+.InpLabel {
+     line-height: 34px;
+     float:left;
+     margin-right: 10px;
+     color: #101010;
+     font-size: 15pt;
+}
+.incorrect {
+    color: var(--incorrect-red);
+}
+.correct {
+    color: var(--correct-green);
+}
+.correctButton {
+    background: var(--correct-green);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+.incorrectButton {
+    background: var(--incorrect-red);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+
+
+</style><script type="text/Javascript">questionskLCXNbGAFzkj=[{"question": "How does a Naive Bayes classifier calculate the probability of an event, and what are the key steps involved in this process?", "type": "many_choice", "answers": [{"answer": "It relies on deep learning techniques exclusively", "correct": false, "feedback": "Incorrect"}, {"answer": "It estimates probabilities for informed classification", "correct": true, "feedback": "Correct"}, {"answer": "It uses unsupervised learning for probability estimation", "correct": false, "feedback": "Incorrect"}, {"answer": "It ignores probability calculations and relies solely on feature independence", "correct": false, "feedback": "Incorrect"}]}];
+    //var mydiv=document.getElementById("testDIV");//console.log(mydiv);// Make a random ID
+function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result.push(characters.charAt(Math.floor(Math.random() *  charactersLength)));
+    }
+    return result.join('');
+}
+
+// Choose a random subset of an array. Can also be used to shuffle the array
+function getRandomSubarray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, temp, index;
+    while (i--) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size);
+}
+function check_mc() {
+    var id=this.id.split('-')[0];
+
+    //console.log("In check_mc(), id="+id);
+    //console.log(event.srcElement.id)           
+    //console.log(event.srcElement.dataset.correct)   
+    //console.log(event.srcElement.dataset.feedback)
+
+    var answers= event.srcElement.parentElement.children;
+    //console.log(answers);
+    
+    // Split behavior based on multiple choice vs many choice:
+    var fb = document.getElementById("fb"+id);
+    if (fb.dataset.numcorrect==1) {
+        for (var i = 0; i < answers.length; i++) {
+            var child=answers[i];
+            child.className="MCButton";
+        }
+
+
+
+        fb.textContent=event.srcElement.dataset.feedback;
+        if (event.srcElement.dataset.correct=="true")   {
+            // console.log("Correct action");
+            this.classList.add("correctButton");
+
+            fb.className="Feedback";
+            fb.classList.add("correct");
+
+        } else {
+            //console.log("Error action");
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+    }
+    else {
+        //console.log("Many choice not implemented yet");
+        var reset = false;
+        if (event.srcElement.dataset.correct=="true" )   {
+            if (event.srcElement.dataset.answered<=0) {
+                if (fb.dataset.answeredcorrect<0) {
+                    fb.dataset.answeredcorrect=1;
+                    reset=true;
+                } else {
+                    fb.dataset.answeredcorrect++;
+                }
+                if (reset) {
+                    for (var i = 0; i < answers.length; i++) {
+                        var child=answers[i];
+                        child.className="MCButton";
+                        child.dataset.answered=0;
+                    }
+                }
+                this.classList.add("correctButton");
+                this.dataset.answered=1;
+                fb.className="Feedback";
+                fb.classList.add("correct");
+
+            }
+        } else {
+            if (fb.dataset.answeredcorrect>0) {
+                fb.dataset.answeredcorrect=-1;
+                reset=true;
+            } else {
+                fb.dataset.answeredcorrect--;
+            }
+
+            if (reset) {
+                for (var i = 0; i < answers.length; i++) {
+                    var child=answers[i];
+                    child.className="MCButton";
+                    child.dataset.answered=0;
+                }
+            }
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+
+        var numcorrect=fb.dataset.numcorrect;
+        var answeredcorrect=fb.dataset.answeredcorrect;
+        if (answeredcorrect>=0) {
+            fb.textContent=event.srcElement.dataset.feedback + " ["  + answeredcorrect + "/" + numcorrect + "]";
+        } else {
+            fb.textContent=event.srcElement.dataset.feedback + "["  + 0 + "/" + numcorrect + "]";
+        }
+
+
+    }
+
+    
+
+}
+
+function make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id) {
+    var shuffled;
+    if (shuffle_answers=="True") {
+        //console.log(shuffle_answers+" read as true");
+        shuffled=getRandomSubarray(qa.answers, qa.answers.length);
+    } else {
+        //console.log(shuffle_answers+" read as false");
+        shuffled=qa.answers;
+    }
+    
+
+    var num_correct=0;
+
+
+    
+    shuffled.forEach((item, index, ans_array) => {
+        //console.log(answer);
+        
+        // Make input element
+        var inp = document.createElement("input");
+        inp.type="radio";
+        inp.id="quizo"+id+index;
+        inp.style="display:none;";
+        aDiv.append(inp);
+        
+        //Make label for input element
+        var lab = document.createElement("label");
+        lab.className="MCButton";
+        lab.id=id+ '-' +index;
+        lab.onclick=check_mc;
+        lab.textContent=item.answer;
+        
+        // Set the data attributes for the answer
+        lab.setAttribute('data-correct', item.correct);
+        if (item.correct) {
+            num_correct++;
+        }
+        lab.setAttribute('data-feedback', item.feedback);
+        lab.setAttribute('data-answered', 0);
+
+        aDiv.append(lab);
+
+    });
+
+    if (num_correct>1) {
+        outerqDiv.className="ManyChoiceQn";
+    } else {
+        outerqDiv.className="MultipleChoiceQn";
+    }
+
+    return num_correct;
+
+}
+function check_numeric(ths, event) {
+
+    if (event.keyCode === 13) {
+        ths.blur();
+
+        var id=ths.id.split('-')[0];
+
+        var submission=ths.value;
+				if (submission.indexOf('/') != -1) {
+            sub_parts=submission.split('/');
+            //console.log(sub_parts);
+            submission=sub_parts[0]/sub_parts[1];
+        }
+        console.log("Reader entered", submission);
+
+        if ("precision" in ths.dataset) {
+            precision=ths.dataset.precision;
+            // console.log("1:", submission)
+            submission=Math.round((1*submission + Number.EPSILON)*10**precision)/ 10**precision; 
+            // console.log("Rounded to ", submission, " precision=", precision  );
+        }
+
+
+        //console.log("In check_numeric(), id="+id);
+        //console.log(event.srcElement.id)           
+        //console.log(event.srcElement.dataset.feedback)
+
+        var fb = document.getElementById("fb"+id);
+        fb.style.display="none";
+        fb.textContent="Incorrect -- try again.";
+
+        answers=JSON.parse(ths.dataset.answers);
+        console.log(answers);
+
+        var defaultFB="";
+        var correct;
+        var done=false;
+        answers.every(answer => {
+            console.log(answer.type);
+
+            correct=false;
+            if (answer.type=="value"){
+                if (submission == answer.value) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="range") {
+                console.log(answer.range);
+                if ((submission >= answer.range[0]) && (submission < answer.range[1])) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="default") {
+                defaultFB=answer.feedback;
+            }
+            if (done) {
+                return false; // Break out of loop if this has been marked correct
+            } else {
+                return true; // Keep looking for case that includes this as a correct answer
+            }
+        });
+
+        if ((!done) && (defaultFB != "")) {
+            fb.textContent=defaultFB;
+            console.log("Default feedback", defaultFB);
+        }
+
+        fb.style.display="block";
+        if (correct) {
+            ths.className="Input-text";
+            ths.classList.add("correctButton");
+            fb.className="Feedback";
+            fb.classList.add("correct");
+        } else {
+            ths.className="Input-text";
+            ths.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+        return false;
+    }
+
+}
+
+function isValid(el,  charC) {
+		if (charC == 46) {
+				if (el.value.indexOf('.') === -1) {
+					  return true;
+				} else if (el.value.indexOf('/') != -1) {
+            parts=el.value.split('/');
+				    if (parts[1].indexOf('.') === -1) {
+					      return true;
+            }
+        }
+        else{
+					  return false;
+				}
+		} else if (charC == 47) {
+				if (el.value.indexOf('/') === -1) {
+            if ((el.value != "") && (el.value != ".")) {
+					      return true;
+            } else {
+					  return false;
+				    }
+        } else {
+            return false;
+        }
+		} else if (charC == 45) {
+        if (el.value == "" ) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+				if (charC > 31 && (charC < 48 || charC > 57))
+					  return false;
+		}
+		return true;
+}
+
+function numeric_keypress( evnt) {
+		var charC = (evnt.which) ? evnt.which : evnt.keyCode;
+
+    if (charC==13) {
+        check_numeric(this, evnt);
+    } else{
+		    return isValid(this, charC);
+    }
+}
+
+
+
+
+
+function make_numeric(qa, outerqDiv, qDiv, aDiv, id) {
+
+
+
+        //console.log(answer);
+
+    
+    outerqDiv.className="NumericQn";
+    aDiv.style.display='block';
+
+    var lab = document.createElement("label");
+    lab.className="InpLabel";
+    lab.textContent="Type numeric answer here:";
+    aDiv.append(lab);
+
+    var inp = document.createElement("input");
+    inp.type="text";
+    //inp.id="input-"+id;
+    inp.id=id+"-0";
+    inp.className="Input-text";
+    inp.setAttribute('data-answers', JSON.stringify(qa.answers) );
+    if ("precision" in qa) {
+        inp.setAttribute('data-precision', qa.precision);
+    }
+    aDiv.append(inp);
+    console.log(inp);
+
+    //inp.addEventListener("keypress", check_numeric);
+    //inp.addEventListener("keypress", numeric_keypress);
+    /*
+    inp.addEventListener("keypress", function(event) {
+        return numeric_keypress(this, event);
+    }
+                        );
+                        */
+    //inp.onkeypress="return numeric_keypress(this, event)";
+    inp.onkeypress=numeric_keypress;
+    inp.onpaste= event => false;
+
+    inp.addEventListener("focus", function(event) {
+        this.value="";
+        return false;
+    }
+                        );
+
+
+}
+function show_questions (json, mydiv) {
+    //var mydiv=document.getElementById(myid);
+    var shuffle_questions=mydiv.dataset.shufflequestions;
+    var num_questions=mydiv.dataset.numquestions;
+    var shuffle_answers=mydiv.dataset.shuffleanswers;
+    
+    if (num_questions>json.length) {
+        num_questions=json.length;
+    }
+    
+    var questions;
+    if ( (num_questions<json.length) || (shuffle_questions=="True") ) {
+        //console.log(num_questions+","+json.length);
+        questions=getRandomSubarray(json, num_questions);
+    } else {
+        questions=json;
+    }
+    
+    //console.log("SQ: "+shuffle_questions+", NQ: " + num_questions + ", SA: ", shuffle_answers);
+    
+    // Iterate over questions
+    questions.forEach((qa, index, array) => {
+        //console.log(qa.question); 
+
+        var id = makeid(8);
+        //console.log(id);
+
+
+        // Create Div to contain question and answers
+        var iDiv = document.createElement('div');
+        iDiv.id = 'quizWrap'+id+index;
+        iDiv.className='Quiz';
+        mydiv.appendChild(iDiv);
+        // iDiv.innerHTML=qa.question;
+
+        var outerqDiv = document.createElement('div');
+        outerqDiv.id="OuterquizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        iDiv.append(outerqDiv);
+
+        // Create div to contain question part
+        var qDiv = document.createElement('div');
+        qDiv.id="quizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        qDiv.innerHTML=qa.question;
+        outerqDiv.append(qDiv);
+
+        // Create div for code inside question
+        var codeDiv;
+        if ("code" in qa){
+            codeDiv = document.createElement('div');
+            codeDiv.id="code"+id+index;
+            codeDiv.className="QuizCode";
+            var codePre = document.createElement('pre');
+            codeDiv.append(codePre);
+            var codeCode = document.createElement('code');
+            codePre.append(codeCode);
+            codeCode.innerHTML=qa.code;
+            outerqDiv.append(codeDiv);
+            console.log(codeDiv);
+        }
+
+
+        // Create div to contain answer part
+        var aDiv = document.createElement('div');
+        aDiv.id="quizAns"+id+index;
+        aDiv.className='Answer';
+        iDiv.append(aDiv);
+
+        console.log(qa.type);
+
+        var num_correct;
+        if (qa.type=="multiple_choice")  {
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if   (qa.type=="many_choice"){
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if  (qa.type=="numeric") {
+            console.log("numeric");
+            make_numeric(qa, outerqDiv, qDiv, aDiv, id);
+        }
+
+
+        //Make div for feedback
+        var fb = document.createElement("div");
+        fb.id="fb"+id;
+        //fb.style="font-size: 20px;text-align:center;";
+        fb.className="Feedback";
+        fb.setAttribute("data-answeredcorrect", 0);
+        fb.setAttribute("data-numcorrect", num_correct);
+        iDiv.append(fb);
+
+
+    });
+}
+
+        {
+        show_questions(questionskLCXNbGAFzkj, kLCXNbGAFzkj);
+        }
+        </script>
+        </div></div>
+</div>
+</section>
+</section>
+<section id="example-titanic">
+<h2>Example: Titanic<a class="headerlink" href="#example-titanic" title="Permalink to this heading">#</a></h2>
+<p><strong><a class="reference external" href="https://www.kaggle.com/competitions/titanic/data">Loading Data</a></strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+</div>
+</div>
+<p>The data has been split into two groups:</p>
+<p>training set (train.csv) test set (test.csv) The training set should be used to build your machine learning models. For the training set, we provide the outcome (also known as the “ground truth”) for each passenger. Our model will be based on “features” like passengers’ gender and class. We also will use feature engineering to create new features.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;train.csv&quot;</span><span class="p">)</span>
+<span class="n">test_df</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">&quot;test.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">train_df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PassengerId</th>
+      <th>Survived</th>
+      <th>Pclass</th>
+      <th>Name</th>
+      <th>Sex</th>
+      <th>Age</th>
+      <th>SibSp</th>
+      <th>Parch</th>
+      <th>Ticket</th>
+      <th>Fare</th>
+      <th>Cabin</th>
+      <th>Embarked</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Braund, Mr. Owen Harris</td>
+      <td>male</td>
+      <td>22.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>A/5 21171</td>
+      <td>7.2500</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Cumings, Mrs. John Bradley (Florence Briggs Th...</td>
+      <td>female</td>
+      <td>38.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>PC 17599</td>
+      <td>71.2833</td>
+      <td>C85</td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>1</td>
+      <td>3</td>
+      <td>Heikkinen, Miss. Laina</td>
+      <td>female</td>
+      <td>26.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>STON/O2. 3101282</td>
+      <td>7.9250</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>1</td>
+      <td>1</td>
+      <td>Futrelle, Mrs. Jacques Heath (Lily May Peel)</td>
+      <td>female</td>
+      <td>35.0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>113803</td>
+      <td>53.1000</td>
+      <td>C123</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>0</td>
+      <td>3</td>
+      <td>Allen, Mr. William Henry</td>
+      <td>male</td>
+      <td>35.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>373450</td>
+      <td>8.0500</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s1">&#39;Embarked&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s1">&#39;Embarked&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mode</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;Fare&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;Fare&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">drop_column</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Cabin&#39;</span><span class="p">]</span>
+<span class="n">train_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_column</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">test_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_column</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">test_df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">train_df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">median</span><span class="p">(),</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Some feature engineering, adjusting the code.</p>
+<p>We will use just two techniques:</p>
+<p>Polynomials generation through non-linear expansions and Box-Cox transformations. But for now we will adjust data</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_data</span><span class="o">=</span><span class="p">[</span><span class="n">train_df</span><span class="p">,</span><span class="n">test_df</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;FamilySize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SibSp&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Parch&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">re</span>
+<span class="c1"># Define function to extract titles from passenger names</span>
+<span class="k">def</span> <span class="nf">get_title</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="n">title_search</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s1">&#39; ([A-Za-z]+)\.&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+    <span class="c1"># If the title exists, extract and return it.</span>
+    <span class="k">if</span> <span class="n">title_search</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">title_search</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+<span class="c1"># Create a new feature Title, containing the titles of passenger names</span>
+<span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">get_title</span><span class="p">)</span>
+<span class="c1"># Group all non-common titles into one single grouping &quot;Rare&quot;</span>
+<span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">([</span><span class="s1">&#39;Lady&#39;</span><span class="p">,</span> <span class="s1">&#39;Countess&#39;</span><span class="p">,</span><span class="s1">&#39;Capt&#39;</span><span class="p">,</span> <span class="s1">&#39;Col&#39;</span><span class="p">,</span><span class="s1">&#39;Don&#39;</span><span class="p">,</span> 
+                                                 <span class="s1">&#39;Dr&#39;</span><span class="p">,</span> <span class="s1">&#39;Major&#39;</span><span class="p">,</span> <span class="s1">&#39;Rev&#39;</span><span class="p">,</span> <span class="s1">&#39;Sir&#39;</span><span class="p">,</span> <span class="s1">&#39;Jonkheer&#39;</span><span class="p">,</span> <span class="s1">&#39;Dona&#39;</span><span class="p">],</span> <span class="s1">&#39;Rare&#39;</span><span class="p">)</span>
+
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Mlle&#39;</span><span class="p">,</span> <span class="s1">&#39;Miss&#39;</span><span class="p">)</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Ms&#39;</span><span class="p">,</span> <span class="s1">&#39;Miss&#39;</span><span class="p">)</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Title&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Mme&#39;</span><span class="p">,</span> <span class="s1">&#39;Mrs&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Age_bin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">40</span><span class="p">,</span><span class="mi">120</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Children&#39;</span><span class="p">,</span><span class="s1">&#39;Teenage&#39;</span><span class="p">,</span><span class="s1">&#39;Adult&#39;</span><span class="p">,</span><span class="s1">&#39;Elder&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_data</span><span class="p">:</span>
+    <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Fare_bin&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;Fare&#39;</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mf">7.91</span><span class="p">,</span><span class="mf">14.45</span><span class="p">,</span><span class="mi">31</span><span class="p">,</span><span class="mi">120</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Low_fare&#39;</span><span class="p">,</span><span class="s1">&#39;median_fare&#39;</span><span class="p">,</span>
+                                                                                      <span class="s1">&#39;Average_fare&#39;</span><span class="p">,</span><span class="s1">&#39;high_fare&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">all_dat</span><span class="o">=</span><span class="p">[</span><span class="n">train_df</span><span class="p">,</span><span class="n">test_df</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="n">all_dat</span><span class="p">:</span>
+    <span class="n">drop_column</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Age&#39;</span><span class="p">,</span><span class="s1">&#39;Fare&#39;</span><span class="p">,</span><span class="s1">&#39;Name&#39;</span><span class="p">,</span><span class="s1">&#39;Ticket&#39;</span><span class="p">]</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_column</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">drop_column</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;PassengerId&#39;</span><span class="p">]</span>
+<span class="n">train_df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_column</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now  we converte the catergical features in numerical by using dummy variable</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">traindf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">train_df</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span><span class="s2">&quot;Age_bin&quot;</span><span class="p">,</span><span class="s2">&quot;Embarked&quot;</span><span class="p">,</span><span class="s2">&quot;Fare_bin&quot;</span><span class="p">],</span>
+                             <span class="n">prefix</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span><span class="s2">&quot;Age_type&quot;</span><span class="p">,</span><span class="s2">&quot;Em_type&quot;</span><span class="p">,</span><span class="s2">&quot;Fare_type&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testdf</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">test_df</span><span class="p">,</span> <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span><span class="s2">&quot;Age_bin&quot;</span><span class="p">,</span><span class="s2">&quot;Embarked&quot;</span><span class="p">,</span><span class="s2">&quot;Fare_bin&quot;</span><span class="p">],</span>
+                             <span class="n">prefix</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Sex&quot;</span><span class="p">,</span><span class="s2">&quot;Title&quot;</span><span class="p">,</span><span class="s2">&quot;Age_type&quot;</span><span class="p">,</span><span class="s2">&quot;Em_type&quot;</span><span class="p">,</span><span class="s2">&quot;Fare_type&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we are ready to train a model and predict the required solution. We want to identify relationship between output (Survived or not) with other variables or features (Gender, Age, Port, etc.), so we are using supervised model of Naive Bayes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span> <span class="c1">#for split the data</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">accuracy_score</span>  <span class="c1">#for accuracy_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">KFold</span> <span class="c1">#for K-fold cross validation</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span> <span class="c1">#score evaluation</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_predict</span> <span class="c1">#prediction</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span> <span class="c1">#for confusion matrix</span>
+<span class="n">all_features</span> <span class="o">=</span> <span class="n">traindf</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s2">&quot;Survived&quot;</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Targeted_feature</span> <span class="o">=</span> <span class="n">traindf</span><span class="p">[</span><span class="s2">&quot;Survived&quot;</span><span class="p">]</span>
+<span class="n">X_train</span><span class="p">,</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_train</span><span class="p">,</span><span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">all_features</span><span class="p">,</span><span class="n">Targeted_feature</span><span class="p">,</span><span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">X_test</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">y_train</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((623, 22), (268, 22), (623,), (268,))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Gaussian Naive Bayes</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
+<span class="n">model</span><span class="o">=</span> <span class="n">GaussianNB</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">prediction_gnb</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;--------------The Accuracy of the model----------------------------&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The accuracy of the Gaussian Naive Bayes Classifier is&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">accuracy_score</span><span class="p">(</span><span class="n">prediction_gnb</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">kfold</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">22</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># k=10, split the data into 10 equal parts</span>
+<span class="n">result_gnb</span><span class="o">=</span><span class="n">cross_val_score</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">all_features</span><span class="p">,</span><span class="n">Targeted_feature</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span><span class="n">scoring</span><span class="o">=</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;The cross validated score for Gaussian Naive Bayes classifier is:&#39;</span><span class="p">,</span><span class="nb">round</span><span class="p">(</span><span class="n">result_gnb</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">cross_val_predict</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">all_features</span><span class="p">,</span><span class="n">Targeted_feature</span><span class="p">,</span><span class="n">cv</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">confusion_matrix</span><span class="p">(</span><span class="n">Targeted_feature</span><span class="p">,</span><span class="n">y_pred</span><span class="p">),</span><span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;3.0f&#39;</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;summer&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Confusion_matrix&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">1.05</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>--------------The Accuracy of the model----------------------------
+The accuracy of the Gaussian Naive Bayes Classifier is 79.48
+The cross validated score for Gaussian Naive Bayes classifier is: 79.8
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.05, &#39;Confusion_matrix&#39;)
+</pre></div>
+</div>
+<img alt="_images/8944784465953bdd1ad5cdbbde7a3d12bac57a51a145f9af4eca34fe8819e273.png" src="_images/8944784465953bdd1ad5cdbbde7a3d12bac57a51a145f9af4eca34fe8819e273.png" />
+</div>
+</div>
+<div class="cell tag_hide_code tag_hide_cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">HTML</span>
+
+<span class="n">HTML</span><span class="p">(</span><span class="s1">&#39;&#39;&#39;&lt;script&gt;</span>
+<span class="s1">code_show=true; </span>
+<span class="s1">function code_toggle() {</span>
+<span class="s1"> if (code_show){</span>
+<span class="s1"> $(&#39;div.input&#39;).hide();</span>
+<span class="s1"> } else {</span>
+<span class="s1"> $(&#39;div.input&#39;).show();</span>
+<span class="s1"> }</span>
+<span class="s1"> code_show = !code_show</span>
+<span class="s1">} </span>
+<span class="s1">$( document ).ready(code_toggle);</span>
+<span class="s1">&lt;/script&gt;</span>
+<span class="s1">&lt;form action=&quot;javascript:code_toggle()&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Click here to toggle on/off the raw code.&quot;&gt;&lt;/form&gt;&#39;&#39;&#39;</span><span class="p">)</span>
+<span class="n">q_b_c</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="s2">&quot;question&quot;</span><span class="p">:</span> <span class="s2">&quot;What is a key advantage of the Naive Bayes classifier in scenarios with limited data compared to other complex models?&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;many_choice&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;answers&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It requires a large amount of labeled training data for accurate predictions&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It tends to overfit the training data easily&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;It performs well only when there is a high degree of correlation among features&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Incorrect&quot;</span>
+        <span class="p">},</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;answer&quot;</span><span class="p">:</span> <span class="s2">&quot;Its simplicity and assumption of feature independence reduce overfitting in limited data situations&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;correct&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;feedback&quot;</span><span class="p">:</span> <span class="s2">&quot;Correct&quot;</span>
+        <span class="p">},</span>
+    <span class="p">]</span>
+<span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell tag_hide_code tag_hide_cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_quiz</span><span class="p">(</span><span class="n">q_b_c</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<div class="output text_html"><div id="CCftBYlHdqQh" data-shufflequestions="False" data-shuffleanswers="True" data-numquestions="1000000"><style>
+:root {
+    --medium-slate-blue: #6f78ffff;
+    --orange-pantone: #f75c03ff;
+    --russian-violet: #392061ff;
+    --maximum-yellow-red: #ffc857ff;
+    --viridian-green: #119da4ff;
+    --incorrect-red: #c80202;
+    --correct-green: #009113;
+}
+
+
+.Quiz {
+     max-width: 600px;
+     margin-top: 15px;
+     margin-left: auto;
+     margin-right: auto;
+     margin-bottom: 15px;
+     padding-bottom: 4px;
+     padding-top: 4px;
+     line-height: 1.1;
+     font-size: 16pt;
+}
+
+.QuizCode {
+    font-size: 14pt;
+    margin-top: 10px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.QuizCode > pre {
+    padding: 4px;
+}
+.Answer{
+     margin: 10px 0;
+     display: grid;
+     grid-template-columns: auto auto;
+     grid-gap: 10px;
+}
+.Feedback{
+     font-size: 16pt;
+     text-align:center;
+ }
+
+.Input {
+    align:left;
+    font-size: 20pt;
+}
+.Input-text {
+    display: block;
+    margin: 10px;
+    color: inherit;
+    width: 140px;
+    background-color: #c0c0c0;
+    color: #fff;
+    padding: 5px;
+    padding-left: 10px;
+
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: inherit;
+    line-height: 20pt;
+    border: none;
+    border-radius: 0.2rem;
+    transition: box-shadow 0.1s);
+}
+
+ .Input-text:focus {
+     outline: none;
+     background-color: #c0c0c0;
+     box-shadow: 0.6rem 0.8rem 1.4rem -0.5rem #999999;
+ }
+
+ .MCButton{
+     background: #fafafa;
+     border: 1px solid #eee;
+     border-radius: 10px;
+     padding: 10px;
+     font-size: 16px;
+     cursor: pointer;
+     text-align: center;
+ }
+ .MultipleChoiceQn {
+     padding: 10px;
+     background: var(--medium-slate-blue);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .ManyChoiceQn {
+     padding: 10px;
+     background: var(--orange-pantone);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+ .NumericQn {
+     padding: 10px;
+     background: var(--russian-violet);
+     color: #fafafa;
+     border-radius: 10px;
+ }
+.InpLabel {
+     line-height: 34px;
+     float:left;
+     margin-right: 10px;
+     color: #101010;
+     font-size: 15pt;
+}
+.incorrect {
+    color: var(--incorrect-red);
+}
+.correct {
+    color: var(--correct-green);
+}
+.correctButton {
+    background: var(--correct-green);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+.incorrectButton {
+    background: var(--incorrect-red);
+    color: #fafafa;
+    box-shadow: inset 0px 0px 5px #555555;
+    outline: none;
+}
+
+
+</style><script type="text/Javascript">questionsCCftBYlHdqQh=[{"question": "What is a key advantage of the Naive Bayes classifier in scenarios with limited data compared to other complex models?", "type": "many_choice", "answers": [{"answer": "It requires a large amount of labeled training data for accurate predictions", "correct": false, "feedback": "Incorrect"}, {"answer": "It tends to overfit the training data easily", "correct": false, "feedback": "Incorrect"}, {"answer": "It performs well only when there is a high degree of correlation among features", "correct": false, "feedback": "Incorrect"}, {"answer": "Its simplicity and assumption of feature independence reduce overfitting in limited data situations", "correct": true, "feedback": "Correct"}]}];
+    //var mydiv=document.getElementById("testDIV");//console.log(mydiv);// Make a random ID
+function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result.push(characters.charAt(Math.floor(Math.random() *  charactersLength)));
+    }
+    return result.join('');
+}
+
+// Choose a random subset of an array. Can also be used to shuffle the array
+function getRandomSubarray(arr, size) {
+    var shuffled = arr.slice(0), i = arr.length, temp, index;
+    while (i--) {
+        index = Math.floor((i + 1) * Math.random());
+        temp = shuffled[index];
+        shuffled[index] = shuffled[i];
+        shuffled[i] = temp;
+    }
+    return shuffled.slice(0, size);
+}
+function check_mc() {
+    var id=this.id.split('-')[0];
+
+    //console.log("In check_mc(), id="+id);
+    //console.log(event.srcElement.id)           
+    //console.log(event.srcElement.dataset.correct)   
+    //console.log(event.srcElement.dataset.feedback)
+
+    var answers= event.srcElement.parentElement.children;
+    //console.log(answers);
+    
+    // Split behavior based on multiple choice vs many choice:
+    var fb = document.getElementById("fb"+id);
+    if (fb.dataset.numcorrect==1) {
+        for (var i = 0; i < answers.length; i++) {
+            var child=answers[i];
+            child.className="MCButton";
+        }
+
+
+
+        fb.textContent=event.srcElement.dataset.feedback;
+        if (event.srcElement.dataset.correct=="true")   {
+            // console.log("Correct action");
+            this.classList.add("correctButton");
+
+            fb.className="Feedback";
+            fb.classList.add("correct");
+
+        } else {
+            //console.log("Error action");
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+    }
+    else {
+        //console.log("Many choice not implemented yet");
+        var reset = false;
+        if (event.srcElement.dataset.correct=="true" )   {
+            if (event.srcElement.dataset.answered<=0) {
+                if (fb.dataset.answeredcorrect<0) {
+                    fb.dataset.answeredcorrect=1;
+                    reset=true;
+                } else {
+                    fb.dataset.answeredcorrect++;
+                }
+                if (reset) {
+                    for (var i = 0; i < answers.length; i++) {
+                        var child=answers[i];
+                        child.className="MCButton";
+                        child.dataset.answered=0;
+                    }
+                }
+                this.classList.add("correctButton");
+                this.dataset.answered=1;
+                fb.className="Feedback";
+                fb.classList.add("correct");
+
+            }
+        } else {
+            if (fb.dataset.answeredcorrect>0) {
+                fb.dataset.answeredcorrect=-1;
+                reset=true;
+            } else {
+                fb.dataset.answeredcorrect--;
+            }
+
+            if (reset) {
+                for (var i = 0; i < answers.length; i++) {
+                    var child=answers[i];
+                    child.className="MCButton";
+                    child.dataset.answered=0;
+                }
+            }
+            this.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+
+        var numcorrect=fb.dataset.numcorrect;
+        var answeredcorrect=fb.dataset.answeredcorrect;
+        if (answeredcorrect>=0) {
+            fb.textContent=event.srcElement.dataset.feedback + " ["  + answeredcorrect + "/" + numcorrect + "]";
+        } else {
+            fb.textContent=event.srcElement.dataset.feedback + "["  + 0 + "/" + numcorrect + "]";
+        }
+
+
+    }
+
+    
+
+}
+
+function make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id) {
+    var shuffled;
+    if (shuffle_answers=="True") {
+        //console.log(shuffle_answers+" read as true");
+        shuffled=getRandomSubarray(qa.answers, qa.answers.length);
+    } else {
+        //console.log(shuffle_answers+" read as false");
+        shuffled=qa.answers;
+    }
+    
+
+    var num_correct=0;
+
+
+    
+    shuffled.forEach((item, index, ans_array) => {
+        //console.log(answer);
+        
+        // Make input element
+        var inp = document.createElement("input");
+        inp.type="radio";
+        inp.id="quizo"+id+index;
+        inp.style="display:none;";
+        aDiv.append(inp);
+        
+        //Make label for input element
+        var lab = document.createElement("label");
+        lab.className="MCButton";
+        lab.id=id+ '-' +index;
+        lab.onclick=check_mc;
+        lab.textContent=item.answer;
+        
+        // Set the data attributes for the answer
+        lab.setAttribute('data-correct', item.correct);
+        if (item.correct) {
+            num_correct++;
+        }
+        lab.setAttribute('data-feedback', item.feedback);
+        lab.setAttribute('data-answered', 0);
+
+        aDiv.append(lab);
+
+    });
+
+    if (num_correct>1) {
+        outerqDiv.className="ManyChoiceQn";
+    } else {
+        outerqDiv.className="MultipleChoiceQn";
+    }
+
+    return num_correct;
+
+}
+function check_numeric(ths, event) {
+
+    if (event.keyCode === 13) {
+        ths.blur();
+
+        var id=ths.id.split('-')[0];
+
+        var submission=ths.value;
+				if (submission.indexOf('/') != -1) {
+            sub_parts=submission.split('/');
+            //console.log(sub_parts);
+            submission=sub_parts[0]/sub_parts[1];
+        }
+        console.log("Reader entered", submission);
+
+        if ("precision" in ths.dataset) {
+            precision=ths.dataset.precision;
+            // console.log("1:", submission)
+            submission=Math.round((1*submission + Number.EPSILON)*10**precision)/ 10**precision; 
+            // console.log("Rounded to ", submission, " precision=", precision  );
+        }
+
+
+        //console.log("In check_numeric(), id="+id);
+        //console.log(event.srcElement.id)           
+        //console.log(event.srcElement.dataset.feedback)
+
+        var fb = document.getElementById("fb"+id);
+        fb.style.display="none";
+        fb.textContent="Incorrect -- try again.";
+
+        answers=JSON.parse(ths.dataset.answers);
+        console.log(answers);
+
+        var defaultFB="";
+        var correct;
+        var done=false;
+        answers.every(answer => {
+            console.log(answer.type);
+
+            correct=false;
+            if (answer.type=="value"){
+                if (submission == answer.value) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="range") {
+                console.log(answer.range);
+                if ((submission >= answer.range[0]) && (submission < answer.range[1])) {
+                    fb.textContent=answer.feedback;
+                    correct=answer.correct;
+                    console.log(answer.correct);
+                    done=true;
+                }
+            } else if (answer.type=="default") {
+                defaultFB=answer.feedback;
+            }
+            if (done) {
+                return false; // Break out of loop if this has been marked correct
+            } else {
+                return true; // Keep looking for case that includes this as a correct answer
+            }
+        });
+
+        if ((!done) && (defaultFB != "")) {
+            fb.textContent=defaultFB;
+            console.log("Default feedback", defaultFB);
+        }
+
+        fb.style.display="block";
+        if (correct) {
+            ths.className="Input-text";
+            ths.classList.add("correctButton");
+            fb.className="Feedback";
+            fb.classList.add("correct");
+        } else {
+            ths.className="Input-text";
+            ths.classList.add("incorrectButton");
+            fb.className="Feedback";
+            fb.classList.add("incorrect");
+        }
+
+        return false;
+    }
+
+}
+
+function isValid(el,  charC) {
+		if (charC == 46) {
+				if (el.value.indexOf('.') === -1) {
+					  return true;
+				} else if (el.value.indexOf('/') != -1) {
+            parts=el.value.split('/');
+				    if (parts[1].indexOf('.') === -1) {
+					      return true;
+            }
+        }
+        else{
+					  return false;
+				}
+		} else if (charC == 47) {
+				if (el.value.indexOf('/') === -1) {
+            if ((el.value != "") && (el.value != ".")) {
+					      return true;
+            } else {
+					  return false;
+				    }
+        } else {
+            return false;
+        }
+		} else if (charC == 45) {
+        if (el.value == "" ) {
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+				if (charC > 31 && (charC < 48 || charC > 57))
+					  return false;
+		}
+		return true;
+}
+
+function numeric_keypress( evnt) {
+		var charC = (evnt.which) ? evnt.which : evnt.keyCode;
+
+    if (charC==13) {
+        check_numeric(this, evnt);
+    } else{
+		    return isValid(this, charC);
+    }
+}
+
+
+
+
+
+function make_numeric(qa, outerqDiv, qDiv, aDiv, id) {
+
+
+
+        //console.log(answer);
+
+    
+    outerqDiv.className="NumericQn";
+    aDiv.style.display='block';
+
+    var lab = document.createElement("label");
+    lab.className="InpLabel";
+    lab.textContent="Type numeric answer here:";
+    aDiv.append(lab);
+
+    var inp = document.createElement("input");
+    inp.type="text";
+    //inp.id="input-"+id;
+    inp.id=id+"-0";
+    inp.className="Input-text";
+    inp.setAttribute('data-answers', JSON.stringify(qa.answers) );
+    if ("precision" in qa) {
+        inp.setAttribute('data-precision', qa.precision);
+    }
+    aDiv.append(inp);
+    console.log(inp);
+
+    //inp.addEventListener("keypress", check_numeric);
+    //inp.addEventListener("keypress", numeric_keypress);
+    /*
+    inp.addEventListener("keypress", function(event) {
+        return numeric_keypress(this, event);
+    }
+                        );
+                        */
+    //inp.onkeypress="return numeric_keypress(this, event)";
+    inp.onkeypress=numeric_keypress;
+    inp.onpaste= event => false;
+
+    inp.addEventListener("focus", function(event) {
+        this.value="";
+        return false;
+    }
+                        );
+
+
+}
+function show_questions (json, mydiv) {
+    //var mydiv=document.getElementById(myid);
+    var shuffle_questions=mydiv.dataset.shufflequestions;
+    var num_questions=mydiv.dataset.numquestions;
+    var shuffle_answers=mydiv.dataset.shuffleanswers;
+    
+    if (num_questions>json.length) {
+        num_questions=json.length;
+    }
+    
+    var questions;
+    if ( (num_questions<json.length) || (shuffle_questions=="True") ) {
+        //console.log(num_questions+","+json.length);
+        questions=getRandomSubarray(json, num_questions);
+    } else {
+        questions=json;
+    }
+    
+    //console.log("SQ: "+shuffle_questions+", NQ: " + num_questions + ", SA: ", shuffle_answers);
+    
+    // Iterate over questions
+    questions.forEach((qa, index, array) => {
+        //console.log(qa.question); 
+
+        var id = makeid(8);
+        //console.log(id);
+
+
+        // Create Div to contain question and answers
+        var iDiv = document.createElement('div');
+        iDiv.id = 'quizWrap'+id+index;
+        iDiv.className='Quiz';
+        mydiv.appendChild(iDiv);
+        // iDiv.innerHTML=qa.question;
+
+        var outerqDiv = document.createElement('div');
+        outerqDiv.id="OuterquizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        iDiv.append(outerqDiv);
+
+        // Create div to contain question part
+        var qDiv = document.createElement('div');
+        qDiv.id="quizQn"+id+index;
+        //qDiv.textContent=qa.question;
+        qDiv.innerHTML=qa.question;
+        outerqDiv.append(qDiv);
+
+        // Create div for code inside question
+        var codeDiv;
+        if ("code" in qa){
+            codeDiv = document.createElement('div');
+            codeDiv.id="code"+id+index;
+            codeDiv.className="QuizCode";
+            var codePre = document.createElement('pre');
+            codeDiv.append(codePre);
+            var codeCode = document.createElement('code');
+            codePre.append(codeCode);
+            codeCode.innerHTML=qa.code;
+            outerqDiv.append(codeDiv);
+            console.log(codeDiv);
+        }
+
+
+        // Create div to contain answer part
+        var aDiv = document.createElement('div');
+        aDiv.id="quizAns"+id+index;
+        aDiv.className='Answer';
+        iDiv.append(aDiv);
+
+        console.log(qa.type);
+
+        var num_correct;
+        if (qa.type=="multiple_choice")  {
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if   (qa.type=="many_choice"){
+            num_correct=make_mc(qa, shuffle_answers, outerqDiv, qDiv, aDiv, id);
+        } else if  (qa.type=="numeric") {
+            console.log("numeric");
+            make_numeric(qa, outerqDiv, qDiv, aDiv, id);
+        }
+
+
+        //Make div for feedback
+        var fb = document.createElement("div");
+        fb.id="fb"+id;
+        //fb.style="font-size: 20px;text-align:center;";
+        fb.className="Feedback";
+        fb.setAttribute("data-answeredcorrect", 0);
+        fb.setAttribute("data-numcorrect", num_correct);
+        iDiv.append(fb);
+
+
+    });
+}
+
+        {
+        show_questions(questionsCCftBYlHdqQh, CCftBYlHdqQh);
+        }
+        </script>
+        </div></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="notebooks2.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Probabilistic models</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#assumptions-made-by-naive-bayes">Assumptions Made by Naive Bayes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-bayes-example">Naive Bayes Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#types-of-naive-bayes-classifiers">Types of Naive Bayes Classifiers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approaches-to-classification-training-discriminative-vs-generative-models">Approaches to classification training: Discriminative vs generative models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#bayesian-classifier">Bayesian classifier</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#naive-bayes-estimation">Naive Bayes estimation</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-implementations-of-the-models">Python implementations of the models</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multinomial-naive-bayes">Multinomial Naive Bayes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-naive-bayes-classifier">Gaussian Naive Bayes classifier</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#bernoulli-naive-bayes-classifier">Bernoulli Naive Bayes classifier</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#example-titanic">Example: Titanic</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By The Jupyter Book Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
